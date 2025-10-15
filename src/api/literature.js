@@ -6,13 +6,10 @@ import request from './request'
  * @param {*} type
  * @returns {Promise}
  */
-export const searchLiterature = (keyword, type) => {
-  // 构建查询参数
-  const params = { keyword }
-  if (type) {
-    params.type = type
-  }
-
+export const searchLiterature = (params) => {
+  console.log('进来了');
+  
+  
   return request.get('/api/search', { params })
 }
 

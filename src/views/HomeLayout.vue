@@ -15,7 +15,7 @@
 
      <!-- 空状态：无检索结果的时候显示 -->
       <EmptyTip
-      v-else-if="!searchResults.length&&hasSearched"
+      v-else-if="!literatureStore.searchResults.length&&hasSearched"
       text="未找到相关文献，换个关键词试试"
       :icon="Search"
       btnText="重新检索"
@@ -25,9 +25,13 @@
       <!-- 检索列表 -->
 
       <div class="result-list" v-else>
-        <div class="result-item" v-for="item in searchResults" :key="item.id">
+        <div class="result-item" v-for="item in literatureStore.searchResults.list" :key="item.id">
           <h3>{{ item.title }}</h3>
-          <p>{{ item.content.slice(0,100) }}...</p>
+          <div class="middle">
+            <img :src="item.cover" alt="">
+            <p class="content">{{ item.content?.slice(0,100) }}...</p>
+          
+          </div>
           <p class="meta">作者:{{ item.author }} | 时间: {{ item.date }}</p>
 
         </div>
@@ -43,25 +47,26 @@ import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
 
+// 导入pinia
+import { useLiteratureStore } from '../store/literatureStore';
+const literatureStore=useLiteratureStore()
+
 const searchInputRef=ref(null)
 const isLoading=ref(false) // 加载状态
-const searchResults=ref([]) // 检索结果
 // 如果没有触发过就不要显示没用检索结果
 const hasSearched=ref(false) // 是否触发过检索
 
 
 const handleSearch=async (keyword)=>{
+  
   if(!keyword.trim()) return
   isLoading.value=true
   hasSearched.value=true
 
   try {
-    const data=await searchLiterature(keyword,'')
-    searchResults.value=data
-    
-    
+    literatureStore.getSearchResult({keyword,type:''})
   } catch (error) {
-    searchResults.value=[]
+    literatureStore.clearSearchResult()
     
   }finally{
     isLoading.value=false
@@ -71,14 +76,14 @@ const handleSearch=async (keyword)=>{
 
 // 处理检索清空
 const handleSearchClear=()=>{
-  searchResults.value=[]
+  literatureStore.clearSearchResult()
   hasSearched.value=false
 }
 
 // 重新检索
 const handleResetSearch=()=>{
   searchInputRef.value.setValue('') // 清空输出
-  searchResults.value=[]
+  literatureStore.clearSearchResult()
   hasSearched.value=false
 }
 
@@ -94,6 +99,21 @@ const handleResetSearch=()=>{
   text-align: center;
   margin-bottom: 30px;
   color: #333;
+}
+
+.middle{
+  display: flex;
+
+  img{
+    flex: 1;
+    height: auto;
+  }
+
+  p{
+    padding-left: 20px;
+    width: 900px;
+  }
+  
 }
 
 .result-list{
