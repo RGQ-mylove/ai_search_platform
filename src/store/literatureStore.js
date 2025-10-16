@@ -25,15 +25,24 @@ export const useLiteratureStore=defineStore('literature',()=>{
     // 检索文件
     const getSearchResult=async(params)=>{
         
+        
         try{
             
             const res=await searchLiterature(params)
+            
             
             
             searchResults.value={
                 list:res,
                 total:res.length
             }
+
+            console.log(searchResults);
+            
+
+
+            
+            
         }catch(err){
             searchResults.value={list:[],total:0}
             console.error('检索文献失败',err);

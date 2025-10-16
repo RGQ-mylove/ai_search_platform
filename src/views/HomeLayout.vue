@@ -3,19 +3,28 @@
     <h1 class="page-title">
       文献检索系统
     </h1>
-
+    
     <SearchInput
-    @search="handleSearch"
+    @search="handleKeywordSearch"
     @clear="handleSearchClear"
     ref="searchInputRef"
+    :default-value="SearchParams.keyword"
     />
+
+    <!-- 筛选器 -->
+    <SearchFilter
+    @filter="handleFilterChange"
+    ref="filterRef"
+    :default-params="SearchParams"
+    ></SearchFilter>
+
 
     <!-- 加载状态：显示骨架屏 -->
      <LoadingSkeleton v-if="isLoading"></LoadingSkeleton>
 
      <!-- 空状态：无检索结果的时候显示 -->
       <EmptyTip
-      v-else-if="!literatureStore.searchResults.length&&hasSearched"
+      v-else-if="literatureStore.searchResults.total===0&&hasSearched"
       text="未找到相关文献，换个关键词试试"
       :icon="Search"
       btnText="重新检索"
@@ -42,36 +51,55 @@
 
 <script setup>
 import { ref } from 'vue';
-import { searchLiterature } from '../api/literature';
 import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
-
 // 导入pinia
 import { useLiteratureStore } from '../store/literatureStore';
+import SearchFilter from '../components/common/SearchFilter.vue';
 const literatureStore=useLiteratureStore()
 
 const searchInputRef=ref(null)
 const isLoading=ref(false) // 加载状态
 // 如果没有触发过就不要显示没用检索结果
 const hasSearched=ref(false) // 是否触发过检索
+const filterRef=ref(null) // 获取searchFilter组件实例
+
+const SearchParams=ref({
+  keyword:'',  // 搜索关键词
+  type:'',     // 文献类型
+  startDate:'',// 开始日期
+  endDate:''   // 结束日期
+})
 
 
-const handleSearch=async (keyword)=>{
-  
-  if(!keyword.trim()) return
+// 统一请求方法
+const fetchSearchResult=async ()=>{
+  // 避免空请求，至少有一个条件才请求
+  const hasCondition=SearchParams.value.keyword?.trim() || SearchParams.value.type || SearchParams.value.startDate
+
+  if(!hasCondition){
+    ElMessage.warning('请输入关键词或选择筛选条件');
+    return;
+  }
+
   isLoading.value=true
-  hasSearched.value=true
 
   try {
-    literatureStore.getSearchResult({keyword,type:''})
+    await literatureStore.getSearchResult(SearchParams.value)
   } catch (error) {
     literatureStore.clearSearchResult()
     
   }finally{
+    // 更新状态
     isLoading.value=false
+    hasSearched.value=true
   }
 
+}
+const handleKeywordSearch=(keyword)=>{
+  SearchParams.value.keyword=keyword.trim()
+  fetchSearchResult(SearchParams.value)
 }
 
 // 处理检索清空
@@ -85,6 +113,11 @@ const handleResetSearch=()=>{
   searchInputRef.value.setValue('') // 清空输出
   literatureStore.clearSearchResult()
   hasSearched.value=false
+}
+
+const handleFilterChange=(filterParams)=>{
+  SearchParams.value={...SearchParams.value,...filterParams}
+  fetchSearchResult()
 }
 
 </script>

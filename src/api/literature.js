@@ -7,8 +7,6 @@ import request from './request'
  * @returns {Promise}
  */
 export const searchLiterature = (params) => {
-  console.log('进来了');
-  
   
   return request.get('/api/search', { params })
 }
