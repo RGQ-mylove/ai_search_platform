@@ -37,9 +37,6 @@ export const useLiteratureStore=defineStore('literature',()=>{
                 total:res.length
             }
 
-            console.log(searchResults);
-            
-
 
             
             

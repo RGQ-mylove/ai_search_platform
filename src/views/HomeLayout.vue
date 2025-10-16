@@ -31,32 +31,46 @@
       @btn-click="handleResetSearch"
       ></EmptyTip>
 
-      <!-- 检索列表 -->
+      <VirtualList
+      v-else-if="literatureStore.searchResults.total > 0"
+      :data="literatureStore.searchResults.list"
+      keyField="id"                              
+      :config="virtualConfig" 
+      >
+      <!-- 插槽：自定义每条文献的渲染样式（和原来的literature-item一致） -->
+      <template #default="{ item }">  <!-- item是虚拟列表组件传过来的单条数据 -->
+         <el-card class="literature-card" >
+    <div class="literature-cover">
+      <el-image :src="item.cover" lazy fit="cover"></el-image>
+    </div>
+    <div class="literature-info">
+      <h3 class="literature-title">{{ item.title }}</h3>
+      <p class="literature-desc">{{ item.content.slice(0, 120) }}...</p>
+      <p class="literature-meta">作者: {{ item.author }} | 时间: {{ item.date }}</p>
+    </div>
+  </el-card>
+      </template>
+    
+    </VirtualList>
 
-      <div class="result-list" v-else>
-        <div class="result-item" v-for="item in literatureStore.searchResults.list" :key="item.id">
-          <h3>{{ item.title }}</h3>
-          <div class="middle">
-            <img :src="item.cover" alt="">
-            <p class="content">{{ item.content?.slice(0,100) }}...</p>
-          
-          </div>
-          <p class="meta">作者:{{ item.author }} | 时间: {{ item.date }}</p>
-
-        </div>
-      </div>
+      
+      
 
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref ,watch} from 'vue';
 import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
 // 导入pinia
 import { useLiteratureStore } from '../store/literatureStore';
 import SearchFilter from '../components/common/SearchFilter.vue';
+import VirtualList from '../components/common/VirtualList.vue';
+
+// 导入vueuse
+import { useVirtualList } from '@vueuse/core';
 const literatureStore=useLiteratureStore()
 
 const searchInputRef=ref(null)
@@ -97,6 +111,7 @@ const fetchSearchResult=async ()=>{
   }
 
 }
+// 处理输入的关键字
 const handleKeywordSearch=(keyword)=>{
   SearchParams.value.keyword=keyword.trim()
   fetchSearchResult(SearchParams.value)
@@ -120,52 +135,107 @@ const handleFilterChange=(filterParams)=>{
   fetchSearchResult()
 }
 
+
+// ---------------------- 新增：虚拟列表配置 ----------------------
+const virtualConfig = ref({
+  itemHeight: 220,  // 单条文献高度（和组件默认值一致，可调整）
+  overscan: 5,      // 缓冲区（保持默认）
+  listHeight: 'calc(100vh - 240px)'  // 列表容器高度（适配页面布局）
+});
+
+
+
+
 </script>
 <style lang="less" scoped>
 .home-page{
-  padding: 20px;
+  padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .page-title{
-  text-align: center;
-  margin-bottom: 30px;
+  margin: 0 0 24px;
+  font-size: 24px;
+  font-weight: 600;
   color: #333;
 }
 
-.middle{
-  display: flex;
 
-  img{
-    flex: 1;
-    height: auto;
-  }
-
-  p{
-    padding-left: 20px;
-    width: 900px;
-  }
-  
+.literature-item {
+  display: flex; /* 关键：让内部 el-card 占满父容器 */
+  margin-bottom: 16px; /* 卡片之间的间距 */
+  box-sizing: border-box;
 }
 
-.result-list{
-  margin-top: 20px;
+.literature-card{
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 16px;
-}
-
-.result-item{
-  padding: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  height: 220px !important;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  ::v-deep .el-card__body {
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    padding: 16px; // 把原计划给 el-card 的 padding 移到这里，保持内边距效果
+    width: 100%; // 确保 body 占满 el-card 宽度
+    box-sizing: border-box;
+  }
 }
 
-.meta{
-  margin-top: 8px;
-  font-size: 12px;
-  color: #999;
+.literature-cover {
+  width: 120px;
+  height: auto;
+  flex-shrink: 0; /* 固定宽度，不收缩 */
+
 }
+
+.literature-info {
+  flex: 1; /* 占满剩余宽度 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 8. 文献标题：控制换行和溢出 */
+.literature-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap; /* 不换行（避免标题过长导致卡片高度变化） */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 溢出显示省略号（...） */
+}
+
+/* 9. 文献描述：控制多行溢出 */
+.literature-desc {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5; /* 行高，增强可读性 */
+  /* 最多显示4行，超出省略（避免描述过长撑高卡片） */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 10. 文献元数据（作者/时间）：弱化样式，区分主次 */
+.literature-meta {
+  margin: 0;
+  font-size: 12px;
+  color: #999; /* 浅灰色，降低视觉权重 */
+  margin-top: auto; /* 顶到信息区底部（确保元数据始终在卡片底部，布局更稳定） */
+}
+
 </style>
