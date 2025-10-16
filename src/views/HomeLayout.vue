@@ -37,18 +37,29 @@
       keyField="id"                              
       :config="virtualConfig" 
       >
+
       <!-- 插槽：自定义每条文献的渲染样式（和原来的literature-item一致） -->
       <template #default="{ item }">  <!-- item是虚拟列表组件传过来的单条数据 -->
-         <el-card class="literature-card" >
-    <div class="literature-cover">
-      <el-image :src="item.cover" lazy fit="cover"></el-image>
-    </div>
-    <div class="literature-info">
-      <h3 class="literature-title">{{ item.title }}</h3>
-      <p class="literature-desc">{{ item.content.slice(0, 120) }}...</p>
-      <p class="literature-meta">作者: {{ item.author }} | 时间: {{ item.date }}</p>
-    </div>
-  </el-card>
+
+        <RouterLink
+        :to="`/literature/${item.id}`"
+
+        class="card-link"
+        >
+
+          <el-card class="literature-card" >
+              <div class="literature-cover">
+                <el-image :src="item.cover" lazy fit="cover"></el-image>
+              </div>
+              <div class="literature-info">
+                <h3 class="literature-title">{{ item.title }}</h3>
+                <p class="literature-desc">{{ item.content.slice(0, 120) }}...</p>
+                <p class="literature-meta">作者: {{ item.author }} | 时间: {{ item.date }}</p>
+              </div>
+          </el-card>
+
+        </RouterLink>
+       
       </template>
     
     </VirtualList>
@@ -64,6 +75,8 @@ import { computed, onMounted, ref ,watch} from 'vue';
 import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
+import { RouterLink } from 'vue-router';
+
 // 导入pinia
 import { useLiteratureStore } from '../store/literatureStore';
 import SearchFilter from '../components/common/SearchFilter.vue';
@@ -163,6 +176,11 @@ const virtualConfig = ref({
 }
 
 
+.card-link{
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
 .literature-item {
   display: flex; /* 关键：让内部 el-card 占满父容器 */
   margin-bottom: 16px; /* 卡片之间的间距 */

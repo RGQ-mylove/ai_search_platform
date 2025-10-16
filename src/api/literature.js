@@ -17,5 +17,7 @@ export const searchLiterature = (params) => {
  * @returns
  */
 export const getLiteratureDetail = (id) => {
+  
+  
   return request.get(`/api/document/${id}`)
 }
