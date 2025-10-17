@@ -25,7 +25,7 @@ const props = defineProps({
   },
   btnText: {
     type: String,
-    default: '' // 按钮文案，为空就不显示
+    default: '' 
   },
   btnType: {
     type: String,

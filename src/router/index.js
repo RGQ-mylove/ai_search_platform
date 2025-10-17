@@ -25,11 +25,12 @@ const routes = [
     component: () => import('@/views/user/UserCenter.vue'),
     meta: {
       title: '个人中心',
-      requiresAuth: true // 标记为需要登录
+      // requiresAuth: true // 标记为需要登录
     },
     children: [
       {
         path: 'history',
+        name:'UserHistory',
         component: () => import('@/views/user/UserHistory.vue'),
         meta: { title: '浏览历史' }
       },
@@ -47,7 +48,7 @@ const routes = [
       },
       {
         path: '',
-        name: 'UserHistory',
+        name: 'UserDefault',
         redirect: 'favorite'
       } // 默认显示收藏页
     ]

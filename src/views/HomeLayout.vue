@@ -5,6 +5,7 @@
     </h1>
     
     <SearchInput
+    v-model="SearchParams.keyword"
     @search="handleKeywordSearch"
     @clear="handleSearchClear"
     ref="searchInputRef"
@@ -76,22 +77,24 @@ import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
 import { RouterLink } from 'vue-router';
-
+import { useRoute } from 'vue-router';
 // 导入pinia
 import { useLiteratureStore } from '../store/literatureStore';
+import { useUserStore } from '../store/userStore';
 import SearchFilter from '../components/common/SearchFilter.vue';
 import VirtualList from '../components/common/VirtualList.vue';
-
 // 导入vueuse
-import { useVirtualList } from '@vueuse/core';
+
 const literatureStore=useLiteratureStore()
 
+const route=useRoute()
 const searchInputRef=ref(null)
 const isLoading=ref(false) // 加载状态
 // 如果没有触发过就不要显示没用检索结果
 const hasSearched=ref(false) // 是否触发过检索
 const filterRef=ref(null) // 获取searchFilter组件实例
 
+const userStore=useUserStore()
 const SearchParams=ref({
   keyword:'',  // 搜索关键词
   type:'',     // 文献类型
@@ -128,6 +131,7 @@ const fetchSearchResult=async ()=>{
 const handleKeywordSearch=(keyword)=>{
   SearchParams.value.keyword=keyword.trim()
   fetchSearchResult(SearchParams.value)
+  userStore.addSearchHistory(keyword)
 }
 
 // 处理检索清空
@@ -138,7 +142,7 @@ const handleSearchClear=()=>{
 
 // 重新检索
 const handleResetSearch=()=>{
-  searchInputRef.value.setValue('') // 清空输出
+  SearchParams.value.keyword='' // 清空输出
   literatureStore.clearSearchResult()
   hasSearched.value=false
 }
@@ -157,7 +161,30 @@ const virtualConfig = ref({
 });
 
 
+watch(
+  ()=>SearchParams.value.keyword,
+  (newKeyword)=>{
+    
+    if(newKeyword){
+      SearchParams.value.keyword=newKeyword
+      fetchSearchResult();
+    }
+  }
+)
 
+onMounted(()=>{
+  
+  
+  
+  const keyword=route.query.keyword
+  
+  if(keyword){
+    SearchParams.value.keyword=keyword
+
+    
+    
+  }
+})
 
 </script>
 <style lang="less" scoped>

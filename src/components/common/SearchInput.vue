@@ -17,9 +17,15 @@
 import { ref } from 'vue'
 import { debounce } from '@/utils/debounce'
 
+const props=defineProps({
+  modelValue:{
+    type:String,
+    default:''
+  }
+})
 // 定义组件对外触发的事件
 const emit = defineEmits(['search', 'clear'])
-const inputValue = ref('')
+const inputValue = ref(props.modelValue)
 
 // 防抖处理
 const handleInput = debounce((value) => {

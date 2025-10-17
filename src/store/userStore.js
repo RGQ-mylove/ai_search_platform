@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', () => {
     const addSearchHistory=(keyword)=>{
         if(!keyword.trim()) return
         // 把跟检索历史相同的过滤掉
-        searchHistory.value=searchHistory.filter(item=>item!==keyword)
+        searchHistory.value=searchHistory.value.filter(item=>item!==keyword)
         searchHistory.value.unshift(keyword)
 
         // 限制20条，超过就删除最后一条
