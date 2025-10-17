@@ -1,8 +1,23 @@
 <template>
   <div class="home-page">
-    <h1 class="page-title">
+    <div class="home-header">
+      <h1 class="page-title">
       文献检索系统
-    </h1>
+      </h1>
+
+      <div class="personal-btn">
+        <el-button
+    type="primary"
+    @click="handleToPersonal"  
+    >
+    个人中心
+
+    </el-button>
+      </div>
+
+    
+    </div>
+    
     
     <SearchInput
     v-model="SearchParams.keyword"
@@ -76,7 +91,7 @@ import { computed, onMounted, ref ,watch} from 'vue';
 import SearchInput from '../components/common/SearchInput.vue';
 import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import EmptyTip from '../components/common/EmptyTip.vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 // 导入pinia
 import { useLiteratureStore } from '../store/literatureStore';
@@ -88,6 +103,7 @@ import VirtualList from '../components/common/VirtualList.vue';
 const literatureStore=useLiteratureStore()
 
 const route=useRoute()
+const router=useRouter()
 const searchInputRef=ref(null)
 const isLoading=ref(false) // 加载状态
 // 如果没有触发过就不要显示没用检索结果
@@ -152,6 +168,9 @@ const handleFilterChange=(filterParams)=>{
   fetchSearchResult()
 }
 
+const handleToPersonal=()=>{
+  router.push('/user')
+}
 
 // ---------------------- 新增：虚拟列表配置 ----------------------
 const virtualConfig = ref({

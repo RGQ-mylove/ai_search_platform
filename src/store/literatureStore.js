@@ -81,7 +81,7 @@ export const useLiteratureStore=defineStore('literature',()=>{
         
     }
 
-    getFavoriteList()
+   
     return {
         searchResults,
         favoriteList,

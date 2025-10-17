@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+
+
+
 const routes = [
   {
     path: '/',
@@ -27,6 +30,11 @@ const routes = [
       title: '个人中心',
       // requiresAuth: true // 标记为需要登录
     },
+    beforeEnter:(to,from,next)=>{
+      console.log('我来啦');
+      next()
+      
+    },
     children: [
       {
         path: 'history',
@@ -45,12 +53,7 @@ const routes = [
         name: 'UserSetting',
         component: () => import('@/views/user/UserSetting.vue'),
         meta: { title: '偏好设置' }
-      },
-      {
-        path: '',
-        name: 'UserDefault',
-        redirect: 'favorite'
-      } // 默认显示收藏页
+      }
     ]
   },
   {

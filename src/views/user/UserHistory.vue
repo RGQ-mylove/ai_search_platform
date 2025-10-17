@@ -2,7 +2,7 @@
   <div class="history-list-container">
     <!-- 头部：标题+清空按钮 -->
      <div class="history-header">
-      <h3>检索历史</h3>
+      
       <el-button
       type="text"
       color="#f56c6c"
@@ -124,6 +124,7 @@ const goToSearch=()=>{
 .history-item{
   cursor: pointer;
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
