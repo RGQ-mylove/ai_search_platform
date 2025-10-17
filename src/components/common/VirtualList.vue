@@ -110,6 +110,8 @@ watch(()=>props.data,()=>{
   position: relative;
   overflow-y: auto;  /* 只显示垂直滚动条 */
   overflow-x: hidden; /* 隐藏水平滚动条（避免布局错乱） */
+
+  width: 100%;
 }
 
 /* 占位容器：透明，仅用于撑起高度 */
@@ -124,8 +126,8 @@ watch(()=>props.data,()=>{
   position: absolute;
   top: 0;
   left: 0;
-  padding-bottom: 10px;
   width: 100%;
+  padding-right: 17px;
   
 }
 </style>

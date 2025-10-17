@@ -5,7 +5,7 @@ import request from './request'
  * @param {*} id
  * @returns
  */
-export const addFavorite = (id) => {
+export const addFavorites = (id) => {
   // 调用POST请求，对应后端的/api/favorite接口
   return request.post('/api/favorite', { id })
 }
@@ -14,7 +14,7 @@ export const addFavorite = (id) => {
  * 获取收藏列表
  * @returns {Promise}
  */
-export const gPromiseetFavoriteList = () => {
+export const getFavoriteListApi = () => {
   return request.get('/api/favorites')
 }
 
@@ -23,6 +23,7 @@ export const gPromiseetFavoriteList = () => {
  * @param {*} id
  * @returns
  */
-export const removeFavorite = (id) => {
+export const removeFavoriteApi = (id) => {
+  
   return request.delete(`/api/favorite/${id}`)
 }

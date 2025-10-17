@@ -1,5 +1,7 @@
 <template>
     <div class="detail-container">
+
+      <div class="btns">
         <el-button
       type="default"
       icon="ArrowLeft"
@@ -9,6 +11,16 @@
       返回搜索页
 
       </el-button>
+
+      <!-- 收藏 -->
+       <FavoriteBtn
+       :id="route.params.id"
+       v-if="route.params.id"
+       class="favorite-btn"
+       ></FavoriteBtn>
+
+      </div>
+        
         <!-- 加载状态 -->
          <LoadingSkeleton v-if="isLoading"></LoadingSkeleton>
 
@@ -77,6 +89,7 @@ import LoadingSkeleton from '../components/common/LoadingSkeleton.vue';
 import { getLiteratureDetail } from '../api/literature';
 import { useRoute,useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import FavoriteBtn from '../components/literature/FavoriteBtn.vue';
 
 const isLoading=ref(true)
 // 存储详情页数据
@@ -170,5 +183,14 @@ const handleBack=()=>{
   margin-top: 32px;
 }
 
+.btns{
+  display: flex;
+  justify-content: space-between;
+}
+
+.favorite-btn{
+  margin-top: 32px;
+
+}
 
 </style>
