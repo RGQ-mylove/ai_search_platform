@@ -35,7 +35,9 @@ request.interceptors.response.use(
 
     // if后端返回200状态码
     if (res.code === 200) {
+      
       return res.data
+      
     } else {
       ElMessage.error(res.message || '操作失败')
       return Promise.reject(new Error(res.message || 'Error'))

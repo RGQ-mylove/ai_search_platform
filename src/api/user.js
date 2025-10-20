@@ -27,3 +27,5 @@ export const removeFavoriteApi = (id) => {
   
   return request.delete(`/api/favorite/${id}`)
 }
+
+

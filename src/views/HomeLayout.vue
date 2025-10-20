@@ -5,16 +5,6 @@
       文献检索系统
       </h1>
 
-      <div class="personal-btn">
-        <el-button
-    type="primary"
-    @click="handleToPersonal"  
-    >
-    个人中心
-
-    </el-button>
-      </div>
-
     
     </div>
     
